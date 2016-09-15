@@ -1,26 +1,23 @@
 import operator
+from functools import update_wrapper
 import csv
 
 from HTMLParser import HTMLParser
 
 from django import forms
 from django import template
-from django.core.exceptions import PermissionDenied
 from django.contrib.admin.views.main import ChangeList
 from django.contrib.admin import options as adminoptions
 from django.contrib.admin import helpers
 from django.contrib.admin.views.main import ERROR_FLAG
 from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.core.paginator import Paginator,  InvalidPage
-from django.db.models import Q
 from django.db import models
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render_to_response
-from django.template import RequestContext
 from django.utils.http import urlencode
 from django.utils.translation import ungettext
 from django.utils.encoding import force_unicode
-from django.utils.functional import update_wrapper
 from django.views.decorators.csrf import csrf_protect
 
 class HTMLRemover(HTMLParser):
@@ -217,7 +214,7 @@ class DisplayList(ChangeList):
         self.list_display_options = self.handle_possible_list_display()
         self.list_display = self.handle_list_display(request)
         self.list_max_show_all = 1000
-        self.query_set = self.get_query_set(request)
+        self.queryset = self.get_queryset(request)
         self.get_results(request)
 
         if not self.model_admin.actions:
@@ -251,8 +248,8 @@ class DisplayList(ChangeList):
                 final_params.append((k, v))
         return '?%s' % urlencode(final_params)
 
-    def get_query_set(self,  request):
-        qs = self.root_query_set
+    def get_queryset(self,  request):
+        qs = self.root_queryset
         # Set ordering.
         ordering = self.get_ordering(request,  qs)
         qs = qs.order_by(*ordering)
@@ -276,7 +273,7 @@ class DisplayList(ChangeList):
         return qs
 
     def get_results(self,  request):
-        paginator = Paginator(self.query_set,  self.list_per_page)
+        paginator = Paginator(self.queryset,  self.list_per_page)
         # Get the number of objects,  with admin filters applied.
         result_count = paginator.count
 
@@ -284,14 +281,14 @@ class DisplayList(ChangeList):
         # Perform a slight optimization: Check to see whether any filters were
         # given. If not,  use paginator.hits to calculate the number of objects,
         # because we've already done paginator.hits and the value is cached.
-        if not self.query_set.query.where:
+        if not self.queryset.query.where:
             full_result_count = result_count
         else:
             #<<<<
 
             #Temporary fix... we are going to patch this...
             #The template has also been temp fixed to not show this number
-            full_result_count = -1#self.root_query_set.count()
+            full_result_count = -1#self.root_queryset.count()
 
             #<<<
 
@@ -300,7 +297,7 @@ class DisplayList(ChangeList):
 
         # Get the list of objects to display on this page.
         if (self.show_all and can_show_all) or not multi_page:
-            result_list = self.query_set._clone()
+            result_list = self.queryset._clone()
         else:
             try:
                 result_list = paginator.page(self.page_num+1).object_list
@@ -565,9 +562,9 @@ class DisplaySet(adminoptions.ModelAdmin):
             return HttpResponseRedirect(request.path + '?' + ERROR_FLAG + '=1')
 
         # if auto_redirect is true we should handle that before anything else
-        if self.auto_redirect and cl.query_set.count() == 1:
+        if self.auto_redirect and cl.queryset.count() == 1:
 
-            obj = cl.query_set[0]
+            obj = cl.queryset[0]
             try:
                 url = obj.get_absolute_url()
             except AttributeError:
@@ -585,7 +582,7 @@ class DisplaySet(adminoptions.ModelAdmin):
 
         # Actions with no confirmation
         if actions and request.method == 'POST':
-            response = self.response_action(request,  queryset=cl.get_query_set(request))
+            response = self.response_action(request,  queryset=cl.get_queryset(request))
             if response:
                 return response
 
