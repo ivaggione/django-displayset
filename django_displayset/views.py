@@ -1,6 +1,7 @@
 import operator
 from functools import update_wrapper
 import csv
+from functools import update_wrapper
 
 from HTMLParser import HTMLParser
 
