@@ -679,7 +679,6 @@ class DisplaySet(adminoptions.ModelAdmin):
             'actions_selection_counter': self.actions_selection_counter,
         }
         context.update(extra_context or {})
-        context_instance = template.RequestContext(request,  current_app=self.admin_site.name)
         return render(request, self.change_list_template or [
             'admin/%s/%s/change_list.html' % (app_label,  opts.object_name.lower()),
             'admin/%s/change_list.html' % app_label,
