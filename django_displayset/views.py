@@ -1,7 +1,6 @@
 import operator
 from functools import update_wrapper
 import csv
-from functools import update_wrapper
 
 from HTMLParser import HTMLParser
 
@@ -15,7 +14,7 @@ from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.core.paginator import Paginator,  InvalidPage
 from django.db import models
 from django.http import HttpResponseRedirect, HttpResponse
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, render
 from django.utils.http import urlencode
 from django.utils.translation import ungettext
 from django.utils.encoding import force_unicode
@@ -681,8 +680,8 @@ class DisplaySet(adminoptions.ModelAdmin):
         }
         context.update(extra_context or {})
         context_instance = template.RequestContext(request,  current_app=self.admin_site.name)
-        return render_to_response(self.change_list_template or [
+        return render(request, self.change_list_template or [
             'admin/%s/%s/change_list.html' % (app_label,  opts.object_name.lower()),
             'admin/%s/change_list.html' % app_label,
             'admin/change_list.html'
-        ],  context,  context_instance=context_instance)
+        ],  context=context)
