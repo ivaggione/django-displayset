@@ -6,6 +6,7 @@ from HTMLParser import HTMLParser
 
 from django import forms
 from django import template
+from django.contrib.admin.sites import AdminSite
 from django.contrib.admin.views.main import ChangeList
 from django.contrib.admin import options as adminoptions
 from django.contrib.admin import helpers
@@ -52,7 +53,7 @@ def pretty(string):
         return cap_first(string.strip())
     return None
 
-class DefaultDisplaySite(object):
+class DefaultDisplaySite(AdminSite):
     actions = []
     root_path = '/'
     name = 'Default DisplaySet Site'
