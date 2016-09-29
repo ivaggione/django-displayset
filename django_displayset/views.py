@@ -5,7 +5,6 @@ import csv
 from HTMLParser import HTMLParser
 
 from django import forms
-from django import template
 from django.contrib.admin.sites import AdminSite
 from django.contrib.admin.views.main import ChangeList
 from django.contrib.admin import options as adminoptions
@@ -53,7 +52,7 @@ def pretty(string):
         return cap_first(string.strip())
     return None
 
-class DefaultDisplaySite(AdminSite):
+class DefaultDisplaySite(object):
     actions = []
     root_path = '/'
     name = 'Default DisplaySet Site'
@@ -83,7 +82,7 @@ def filterset_generic(request, filter, display_class, queryset=None, extra_conte
     if hasattr(filter, 'get_parameters'):
         params = filter.get_parameters()
     else:
-        params =  []
+        params = []
 
     form = filter.form
 
@@ -155,7 +154,7 @@ def list_replace(replacements,  original): # replacements are [(index, function)
 #    export = True
 #    export_name = "display_report" ####makes the file name display_report.csv
 def csv_export(modeladmin,  request,  queryset):
-    response = HttpResponse(mimetype='text/csv')
+    response = HttpResponse(content_type='text/csv')
     try:
         export_name = modeladmin.export_name
     except AttributeError:
