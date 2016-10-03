@@ -420,6 +420,7 @@ class DisplayList(ChangeList):
 
 
 class DisplaySet(adminoptions.ModelAdmin):
+    empty_value_display = '-'
     change_list_template = 'displayset/base.html'
     use_get_absolute_url = []
     list_display_default = []
