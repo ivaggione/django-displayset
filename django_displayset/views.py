@@ -457,7 +457,7 @@ class DisplaySet(adminoptions.ModelAdmin):
         DisplayList.after_pagination_select_related = self.after_pagination_select_related
         return DisplayList
 
-    def queryset(self,  request):
+    def get_queryset(self,  request):
         if self.distinct:
             return self.filtered_queryset.distinct()
         return self.filtered_queryset
