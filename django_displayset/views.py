@@ -2,7 +2,8 @@ import operator
 from functools import update_wrapper
 import csv
 
-from HTMLParser import HTMLParser
+from html.parser import HTMLParser
+from functools import reduce
 
 from django import forms
 from django.contrib.admin.sites import AdminSite
@@ -17,7 +18,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render_to_response, render
 from django.utils.http import urlencode
 from django.utils.translation import ungettext
-from django.utils.encoding import force_unicode
+from django.utils.encoding import force_text
 from django.views.decorators.csrf import csrf_protect
 
 class HTMLRemover(HTMLParser):
@@ -99,7 +100,7 @@ def filterset_generic(request, filter, display_class, queryset=None, extra_conte
                 selected_set = form.fields[field].queryset.filter(pk__in=value)
                 new_value = ',  '.join([form.fields[field].label_from_instance(o) for o in selected_set])
             elif getattr(form.fields[field], 'choices',  None):
-                new_value = ',  '.join([unicode(c[1]) for c in form.fields[field].choices if unicode(c[0]) in value])
+                new_value = ',  '.join([str(c[1]) for c in form.fields[field].choices if str(c[0]) in value])
             else:
                 new_value = ',  '.join(new_value)
 
@@ -188,7 +189,7 @@ def csv_export(modeladmin,  request,  queryset):
                     text = htmlremover.get_data()
                 else:
                     text = getattr(obj,  f,  "(None)")
-                if isinstance(text,  basestring):
+                if isinstance(text,  str):
                     text = text.encode('utf-8')
                 row.append(text)
         writer.writerow(row)
@@ -359,7 +360,7 @@ class DisplayList(ChangeList):
                 try:
                     index = [getattr(i, "func_name", None) for i in self.list_display_options].index(column)
                     modified_list_display.append(self.list_display_options[index])
-                except ValueError, IndexError:
+                except (ValueError, IndexError):
                     pass
 
         if 'action_checkbox' in self.model_admin.list_display:
@@ -610,14 +611,14 @@ class DisplaySet(adminoptions.ModelAdmin):
 
                 if changecount:
                     if changecount == 1:
-                        name = force_unicode(opts.verbose_name)
+                        name = force_text(opts.verbose_name)
                     else:
-                        name = force_unicode(opts.verbose_name_plural)
+                        name = force_text(opts.verbose_name_plural)
                     msg = ungettext("%(count)s %(name)s was changed successfully.",
                                     "%(count)s %(name)s were changed successfully.",
                                     changecount) % {'count': changecount,
                                                     'name': name,
-                                                    'obj': force_unicode(obj)}
+                                                    'obj': force_text(obj)}
                     self.message_user(request,  msg)
 
                 return HttpResponseRedirect(request.get_full_path())
@@ -665,7 +666,7 @@ class DisplaySet(adminoptions.ModelAdmin):
         columns_form.fields['columns'].initial = column_form_initial
 
         context = {
-            'module_name': force_unicode(opts.verbose_name_plural),
+            'module_name': force_text(opts.verbose_name_plural),
             'columns_form': columns_form,
             'title': cl.title,
             'is_popup': cl.is_popup,
