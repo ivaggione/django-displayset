@@ -680,6 +680,7 @@ class DisplaySet(adminoptions.ModelAdmin):
             'actions_on_top': self.actions_on_top,
             'actions_on_bottom': self.actions_on_bottom,
             'actions_selection_counter': self.actions_selection_counter,
+            'opts': self.opts
         }
         context.update(extra_context or {})
         return render(request, self.change_list_template or [
