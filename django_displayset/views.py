@@ -172,7 +172,7 @@ def csv_export(modeladmin,  request,  queryset):
                 try:
                     header.append(f.short_description)
                 except AttributeError:
-                    header.append(f.func_name)
+                    header.append(f.__name__)
                 continue
             fields.append(f)
             header.append(f)
@@ -358,7 +358,7 @@ class DisplayList(ChangeList):
                 modified_list_display.append(column)
             else:
                 try:
-                    index = [getattr(i, "func_name", None) for i in self.list_display_options].index(column)
+                    index = [getattr(i, "__name__", None) for i in self.list_display_options].index(column)
                     modified_list_display.append(self.list_display_options[index])
                 except (ValueError, IndexError):
                     pass
@@ -386,7 +386,7 @@ class DisplayList(ChangeList):
         return list_display
 
     def is_absolute_urlified(self, field):
-        if field in self.absolute_urlified or (callable(field) and field.func_name in self.absolute_urlified):
+        if field in self.absolute_urlified or (callable(field) and field.__name__ in self.absolute_urlified):
             return True
         return False
 
@@ -397,10 +397,10 @@ class DisplayList(ChangeList):
             func = lambda obj: "<a href=\"%s\">%s</a>" % (obj.get_absolute_url(),  getattr(obj, func.field)) # or func.field
             func.admin_order_field = field
             func.short_description = pretty(field)
-            func.func_name = field # Otherwise the func_name is '<lambda>'
+            func.__name__ = field # Otherwise the __name__ is '<lambda>'
             self.absolute_urlified.add(field)
 
-        elif callable(field) and field.func_name in self.model_admin.use_get_absolute_url:
+        elif callable(field) and field.__name__ in self.model_admin.use_get_absolute_url:
             func = lambda obj: "<a href=\"%s\">%s</a>" % (obj.get_absolute_url(),  func.field(obj)) # or func.field(obj)
             try:
                 func.admin_order_field = field.admin_order_field
@@ -409,9 +409,9 @@ class DisplayList(ChangeList):
             try:
                 func.short_description = field.short_description
             except AttributeError:
-                func.short_description = pretty(field.func_name)
-            func.func_name = field.func_name # Otherwise the func_name is '<lambda>'
-            self.absolute_urlified.add(field.func_name)
+                func.short_description = pretty(field.__name__)
+            func.__name__ = field.__name__  # Otherwise the __name__ is '<lambda>'
+            self.absolute_urlified.add(field.__name__)
 
         if func:
             func.allow_tags = True
@@ -652,7 +652,7 @@ class DisplaySet(adminoptions.ModelAdmin):
             if item in default_display or item == 'action_checkbox':
                 continue
 
-            name = getattr(item, "func_name", item)
+            name = getattr(item, "__name__", item)
 
             display_name = getattr(item, "short_description", pretty(name))
 
