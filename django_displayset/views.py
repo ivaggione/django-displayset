@@ -12,10 +12,10 @@ from django.contrib.admin import options as adminoptions
 from django.contrib.admin import helpers
 from django.contrib.admin.views.main import ERROR_FLAG
 from django.contrib.admin.widgets import FilteredSelectMultiple
-from django.core.paginator import Paginator,  InvalidPage
+from django.core.paginator import Paginator, InvalidPage
 from django.db import models
 from django.http import HttpResponseRedirect, HttpResponse
-from django.shortcuts import render_to_response, render
+from django.shortcuts import render
 from django.utils.http import urlencode
 from django.utils.translation import ungettext
 from django.utils.encoding import force_text
@@ -561,7 +561,7 @@ class DisplaySet(adminoptions.ModelAdmin):
             # something is screwed up with the database,  so display an error
             # page.
             if ERROR_FLAG in request.GET.keys():
-                return render_to_response('admin/invalid_setup.html',  {'title': ('Database error')})
+                return render(request, 'admin/invalid_setup.html',  {'title': ('Database error')})
             return HttpResponseRedirect(request.path + '?' + ERROR_FLAG + '=1')
 
         # if auto_redirect is true we should handle that before anything else
