@@ -18,7 +18,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
 from django.utils.http import urlencode
 from django.utils.translation import ngettext
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from django.views.decorators.csrf import csrf_protect
 
 class HTMLRemover(HTMLParser):
@@ -612,14 +612,14 @@ class DisplaySet(adminoptions.ModelAdmin):
 
                 if changecount:
                     if changecount == 1:
-                        name = force_text(opts.verbose_name)
+                        name = force_str(opts.verbose_name)
                     else:
-                        name = force_text(opts.verbose_name_plural)
+                        name = force_str(opts.verbose_name_plural)
                     msg = ngettext("%(count)s %(name)s was changed successfully.",
                                     "%(count)s %(name)s were changed successfully.",
                                     changecount) % {'count': changecount,
                                                     'name': name,
-                                                    'obj': force_text(obj)}
+                                                    'obj': force_str(obj)}
                     self.message_user(request,  msg)
 
                 return HttpResponseRedirect(request.get_full_path())
@@ -667,7 +667,7 @@ class DisplaySet(adminoptions.ModelAdmin):
         columns_form.fields['columns'].initial = column_form_initial
 
         context = {
-            'module_name': force_text(opts.verbose_name_plural),
+            'module_name': force_str(opts.verbose_name_plural),
             'columns_form': columns_form,
             'title': cl.title,
             'is_popup': cl.is_popup,
