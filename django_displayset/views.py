@@ -17,7 +17,7 @@ from django.db import models
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
 from django.utils.http import urlencode
-from django.utils.translation import ungettext
+from django.utils.translation import ngettext
 from django.utils.encoding import force_text
 from django.views.decorators.csrf import csrf_protect
 
@@ -615,7 +615,7 @@ class DisplaySet(adminoptions.ModelAdmin):
                         name = force_text(opts.verbose_name)
                     else:
                         name = force_text(opts.verbose_name_plural)
-                    msg = ungettext("%(count)s %(name)s was changed successfully.",
+                    msg = ngettext("%(count)s %(name)s was changed successfully.",
                                     "%(count)s %(name)s were changed successfully.",
                                     changecount) % {'count': changecount,
                                                     'name': name,
