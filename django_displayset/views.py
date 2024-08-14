@@ -433,6 +433,7 @@ class DisplaySet(adminoptions.ModelAdmin):
     export_name = None
     distinct = False
     sortable_by = None
+    search_help_text = None
 
     def __init__(self, queryset, display_set_site, *args, **kwargs):
 
@@ -552,7 +553,7 @@ class DisplaySet(adminoptions.ModelAdmin):
         try:
             cl = ChangeList(request,  self.model,  list_display,  self.list_display_links,  self.list_filter,
                 self.date_hierarchy,  self.search_fields,  self.list_select_related,  self.list_per_page,
-                self.list_max_show_all,  self.list_editable,  self, self.sortable_by)
+                self.list_max_show_all,  self.list_editable,  self, self.sortable_by, self.search_help_text)
         except adminoptions.IncorrectLookupParameters:
             # Wacky lookup parameters were given,  so redirect to the main
             # changelist page,  without parameters,  and pass an 'invalid=1'
