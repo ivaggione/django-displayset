@@ -204,13 +204,13 @@ class DisplayList(ChangeList):
 
         self.absolute_urlified = set()
         self.list_display_links = [None]
+        self.multiple_params_safe = dict(request.GET.lists())
         super(DisplayList, self).__init__(request, *args, **kwargs)
 
         if hasattr(self.model_admin, 'list_display_default') and '__str__' in self.model_admin.list_display:
             # Remove the Django default display if a new default has been established with the API
             self.model_admin.list_display.remove('__str__')
 
-        self.multiple_params_safe = dict(request.GET.lists())
         self.model_admin.list_display_default = self.handle_default_display()
         self.list_display_options = self.handle_possible_list_display()
         self.list_display = self.handle_list_display(request)
